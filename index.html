@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Календарь-Напоминалка</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <i class="fas fa-check-circle toast-icon"></i>
+            <span id="toastMessage">Напоминание добавлено!</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="welcome-section">
+            <h1 class="welcome-text">Добро пожаловать в онлайн напоминалку!</h1>
+            <div class="time-date">
+                <div class="clock">
+                    <i class="fas fa-clock"></i>
+                    <span id="time">00:00:00</span>
+                </div>
+                <div class="date">
+                    <i class="fas fa-calendar"></i>
+                    <span id="date">01.01.2024</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="categories-section">
+                <h2>Категории</h2>
+                <form id="categoryForm" class="category-form">
+                    <div class="form-group">
+                        <input type="text" id="categoryName" placeholder="Название новой категории" required>
+                        <input type="color" id="categoryColor" value="#4ecca3">
+                        <button type="submit" class="add-btn">
+                            <i class="fas fa-plus"></i> Добавить категорию
+                        </button>
+                    </div>
+                </form>
+                <div id="categoriesList" class="categories-list">
+                    <!-- Здесь будут отображаться категории -->
+                </div>
+            </section>
+
+            <section class="reminders-section">
+                <h2>Напоминания</h2>
+                <div class="filter-section">
+                    <select id="categoryFilter" class="category-filter">
+                        <option value="all">Все категории</option>
+                    </select>
+                </div>
+                <form id="reminderForm" class="reminder-form">
+                    <div class="form-group">
+                        <input type="text" id="reminderText" placeholder="Введите напоминание" required>
+                        <select id="reminderCategory" required>
+                            <option value="">Выберите категорию</option>
+                        </select>
+                        <input type="datetime-local" id="reminderDateTime" required>
+                        <button type="submit" class="add-btn">
+                            <i class="fas fa-plus"></i> Добавить
+                        </button>
+                    </div>
+                </form>
+                <div id="remindersList" class="reminders-list">
+                    <!-- Здесь будут отображаться напоминания -->
+                </div>
+            </section>
+
+            <section class="groups-section">
+                <h2>Группы</h2>
+                <form id="groupForm" class="group-form">
+                    <input type="text" id="groupNameInput" placeholder="Название группы" required>
+                    <button type="submit" class="add-btn"><i class="fas fa-users"></i> Создать группу</button>
+                </form>
+                <div id="groupsList" class="groups-list"></div>
+                <div id="myGroupSection" style="display:none;">
+                    <h3>Ваша группа: <span id="myGroupName"></span></h3>
+                    <button id="leaveGroupBtn" class="add-btn" style="background:#ff6b6b;color:#fff;"><i class="fas fa-sign-out-alt"></i> Выйти из группы</button>
+                    <div id="groupRemindersSection">
+                        <h4>Групповые напоминания</h4>
+                        <form id="groupReminderForm" class="reminder-form">
+                            <div class="form-group">
+                                <input type="text" id="groupReminderText" placeholder="Текст напоминания" required>
+                                <input type="datetime-local" id="groupReminderDateTime" required>
+                                <button type="submit" class="add-btn"><i class="fas fa-plus"></i> Добавить</button>
+                            </div>
+                        </form>
+                        <div id="groupRemindersList" class="reminders-list"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <div class="theme-toggle" id="themeToggle" title="Переключить тему">
+            <i class="fas fa-moon"></i>
+        </div>
+        <div class="auth-container" id="authContainer">
+            <button class="auth-btn" id="authBtn">
+                <i class="fas fa-user"></i> Войти
+            </button>
+            <div class="auth-dropdown" id="authDropdown">
+                <button id="siteLogin"><i class="fas fa-sign-in-alt"></i> Вход</button>
+                <button id="siteRegister"><i class="fas fa-user-plus"></i> Регистрация</button>
+            </div>
+        </div>
+
+        <div class="logout-container" id="logoutContainer" style="display:none;">
+            <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Выйти</button>
+        </div>
+        <div class="user-info" id="userInfo" style="display:none;">
+            <div class="user-avatar" id="userAvatar"></div>
+            <span class="user-name" id="userName"></span>
+        </div>
+    </div>
+    <audio id="sound-add" src="https://notificationsounds.com/storage/sounds/file-sounds-1151-pristine.mp3" preload="auto"></audio>
+    <audio id="sound-delete" src="https://notificationsounds.com/storage/sounds/file-sounds-1141-plucky.mp3" preload="auto"></audio>
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeRegisterModal">&times;</span>
+            <h2>Регистрация</h2>
+            <form id="registerForm" class="register-form">
+                <div class="form-group">
+                    <label for="registerNickname">Никнейм</label>
+                    <input type="text" id="registerNickname" required placeholder="Введите никнейм">
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Пароль</label>
+                    <input type="password" id="registerPassword" required placeholder="Введите пароль">
+                </div>
+                <div class="form-group">
+                    <label for="registerTelegram">Telegram username (необязательно)</label>
+                    <input type="text" id="registerTelegram" placeholder="@username">
+                </div>
+                <button type="submit" class="add-btn">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeLoginModal">&times;</span>
+            <h2>Вход</h2>
+            <form id="loginForm" class="register-form">
+                <div class="form-group">
+                    <label for="loginNickname">Никнейм</label>
+                    <input type="text" id="loginNickname" required placeholder="Введите никнейм">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Пароль</label>
+                    <input type="password" id="loginPassword" required placeholder="Введите пароль">
+                </div>
+                <button type="submit" class="add-btn">Войти</button>
+            </form>
+        </div>
+    </div>
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeProfileModal">&times;</span>
+            <h2>Профиль</h2>
+            <form id="profileForm" class="register-form">
+                <div class="form-group">
+                    <label for="profileNickname">Никнейм</label>
+                    <input type="text" id="profileNickname" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="profileTelegram">Telegram username</label>
+                    <input type="text" id="profileTelegram" placeholder="@username">
+                </div>
+                <button type="submit" class="add-btn">Сохранить</button>
+            </form>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
